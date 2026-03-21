@@ -7,77 +7,107 @@ interface ChatBubbleProps {
 }
 
 const UserIcon: React.FC = () => (
-    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold flex-shrink-0">
-        Y
-    </div>
+  <div style={{
+    width: 32, height: 32, borderRadius: '50%',
+    background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: '#fff', fontWeight: 700, fontSize: 13, flexShrink: 0,
+  }}>Y</div>
 );
 
 const ModelIcon: React.FC = () => (
-    <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold flex-shrink-0">
-        AI
-    </div>
+  <div style={{
+    width: 32, height: 32, borderRadius: '50%',
+    background: 'linear-gradient(135deg, #00C896, #007A5E)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: 16, flexShrink: 0,
+    boxShadow: '0 0 12px rgba(0,200,150,0.3)',
+  }}>🌍</div>
 );
 
+const LoadingDots: React.FC = () => (
+  <div style={{ display: 'flex', gap: 5, padding: '4px 0' }}>
+    {[0, 1, 2].map(i => (
+      <div key={i} style={{
+        width: 7, height: 7, borderRadius: '50%', background: '#00C896',
+        animation: 'pulse 1s ease-in-out infinite',
+        animationDelay: `${i * 0.15}s`,
+      }} />
+    ))}
+  </div>
+);
+
+const ImageSkeleton: React.FC = () => (
+  <div style={{
+    marginTop: 12, borderRadius: 10, height: 200,
+    background: 'linear-gradient(90deg, #1a1a1a 25%, #222 50%, #1a1a1a 75%)',
+    backgroundSize: '200% 100%',
+    animation: 'shimmer 1.5s infinite',
+  }} />
+);
+
+const renderMarkdown = (text: string) => {
+  let html = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#fff;font-weight:600">$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:4px;padding:1px 6px;font-size:12px;color:#00C896">$1</code>')
+    .replace(/(\r\n|\n|\r)/g, '<br />');
+
+  html = html.replace(/^\s*[-•]\s+(.*)/gm, (_m, c) => `<li>${c.trim()}</li>`);
+  html = html.replace(/(<li>[\s\S]*?<\/li>)/g, '<ul style="padding-left:18px;margin:6px 0">$1</ul>');
+  html = html.replace(/<\/ul><br \/><ul[^>]*>/g, '');
+
+  return { __html: html };
+};
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoading = false }) => {
   const { role, text, imageUrl, isLoadingImage } = message;
   const isUser = role === 'user';
 
-  const bubbleClasses = isUser
-    ? 'bg-blue-500 text-white'
-    : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200';
-  
-  const containerClasses = isUser
-    ? 'flex items-end justify-end gap-2'
-    : 'flex items-end gap-2';
-
-  const LoadingIndicator = () => (
-    <div className="flex items-center justify-center space-x-1">
-      <div className="w-2 h-2 bg-gray-500 rounded-full animate-pulse [animation-delay:-0.3s]"></div>
-      <div className="w-2 h-2 bg-gray-500 rounded-full animate-pulse [animation-delay:-0.15s]"></div>
-      <div className="w-2 h-2 bg-gray-500 rounded-full animate-pulse"></div>
-    </div>
-  );
-  
-  const ImageLoader: React.FC = () => (
-      <div className="mt-3 rounded-lg bg-gray-200 dark:bg-gray-600 animate-pulse w-full aspect-video"></div>
-  );
-
-  // A simple markdown-to-html converter
-  const renderMarkdown = (mdText: string) => {
-    let html = mdText
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
-      .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic
-      .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-600 rounded px-1 py-0.5 text-sm">$1</code>') // Inline code
-      .replace(/(\r\n|\n|\r)/g, '<br />'); // Newlines
-
-    // Lists
-    html = html.replace(/^\s*\*\s+(.*)/gm, (match, content) => {
-        return `<li>${content.trim()}</li>`;
-    });
-    html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
-    html = html.replace(/<\/ul><br \/><ul>/g, ''); // Fix consecutive lists
-
-    return { __html: html };
-  };
-
   return (
-    <div className={containerClasses}>
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-end',
+      gap: 10,
+      justifyContent: isUser ? 'flex-end' : 'flex-start',
+    }}>
       {!isUser && <ModelIcon />}
-      <div
-        className={`max-w-md lg:max-w-2xl px-4 py-3 rounded-2xl shadow-md transition-all duration-300 ${bubbleClasses} ${isUser ? 'rounded-br-none' : 'rounded-bl-none'}`}
-      >
-        {isLoading ? <LoadingIndicator /> : <div dangerouslySetInnerHTML={renderMarkdown(text)} />}
-        {isLoadingImage && <ImageLoader />}
+
+      <div style={{
+        maxWidth: 'min(480px, 80%)',
+        padding: '12px 16px',
+        borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+        background: isUser
+          ? 'linear-gradient(135deg, #1d4ed8, #2563eb)'
+          : '#111',
+        border: isUser ? 'none' : '1px solid #1e1e1e',
+        color: isUser ? '#fff' : '#ccc',
+        fontSize: 14,
+        lineHeight: 1.7,
+        boxShadow: isUser
+          ? '0 4px 20px rgba(37,99,235,0.25)'
+          : '0 2px 12px rgba(0,0,0,0.4)',
+      }}>
+        {isLoading
+          ? <LoadingDots />
+          : <div dangerouslySetInnerHTML={renderMarkdown(text)} />
+        }
+        {isLoadingImage && <ImageSkeleton />}
         {imageUrl && !isLoadingImage && (
-            <img 
-                src={imageUrl} 
-                alt="Travel inspiration"
-                className="mt-3 rounded-lg shadow-lg w-full object-cover"
-            />
+          <img
+            src={imageUrl}
+            alt="Travel inspiration"
+            style={{ marginTop: 12, borderRadius: 10, width: '100%', objectFit: 'cover', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
+          />
         )}
       </div>
+
       {isUser && <UserIcon />}
+
+      <style>{`
+        @keyframes pulse{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1);}}
+        @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+      `}</style>
     </div>
   );
 };

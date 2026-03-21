@@ -1,20 +1,24 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# NSUURA AI 🌍
 
-# Run and deploy your AI Studio app
+Your smart AI travel companion for Rwanda & East Africa.
 
-This contains everything you need to run your app locally.
+## What it does
+- Chat with Tura, your AI tour guide
+- Get travel tips, hotel recommendations, routes
+- Generate travel inspiration with AI images
+- Supports English, French & Kinyarwanda
 
-View your app in AI Studio: https://ai.studio/apps/drive/1UV5C4xZm5bQuDoWmv5JG-0sqgGaSLfLQ
+## Tech Stack
+- React + TypeScript + Vite
+- Google Gemini 2.5 Flash API
+- Tailwind CSS
 
-## Run Locally
+## How to run locally
+1. Clone the repo
+2. Run `npm install`
+3. Create `.env` file and add: `GEMINI_API_KEY=your_key_here`
+4. Run `npm run dev`
+5. Open http://localhost:3000
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Made by
+[Your Name] — Built with ❤️ in Rwanda 🇷🇼
